@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload</title>
+    <!-- Toast CSS -->
+<link rel="stylesheet" href="Toast.css">
+<!-- Toast JS -->
+<script type="text/javascript" src="Toast.js"></script>
+<!-- JQuery JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <form id="fupForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required />
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required />
+        </div>
+        <br>
+        <div>
+            <p class="text-left">Phone Number:</p>
+            <input id="phone" name="phone" type="tel" autocomplete="phone-number" class="form-control" placeholder="Enter your phone number"  required>
+        </div>
+
+    <div class="py-2 text-left">
+        <p>Gender:</p>
+          <input type="radio" id="male" name="gender" value="male">
+          <label for="html">Male</label><br>
+          <input type="radio" id="female" name="gender" value="female">
+          <label for="css">Female</label><br>
+          <input type="radio" id="others" name="gender" value="others">
+          <label for="others">Others</label>
+    </div>
+    <br>
+    <div class="py-2 text-left">
+            <label class="text-left">Educational Qualification:</label>
+            <select id="education" name="education" class="form-control"  required>
+                <option value="" selected disabled>--Choose--</option>
+                <option value="ssce">SSCE</option>
+                <option value="ond">OND</option>
+                <option value="hnd">HND</option>
+                <option value="bsc">B.Sc</option>
+                <option value="masters">Masters</option>
+                <option value="phd">PHD</option>
+                <option value="others">Others</option>
+            </select>
+    </div>
+    <br>
+    <br>
+        <div class="form-group">
+            <label for="file">File</label>
+            <input type="file" class="form-control" id="file" name="file" required />
+        </div>
+        <div class="py-2 text-left">
+            <p>Drop a message</p>
+            <textarea name="message" id="message" cols="30" rows="10">Enter Your Message</textarea>
+        </div>
+        <br>
+        <input type="submit" name="submit" class="btn btn-success submitBtn" value="SUBMIT"/>
+        <span class="statusMsg"></span>
+    </form>
+</body>
+</html>
+
+<script>
+    $(document).ready(function(e){
+
+    // Detect online and offline status
+    if (navigator.onLine) online()
+    else offline()
+
+    window.addEventListener('online', online);
+    window.addEventListener('offline', offline);
+
+    function online(){
+        new Toast({
+        message: 'Hey there! You\'re online!',
+        type: 'success'
+    });
+    }
+
+    function offline(){
+        new Toast({
+        message: 'Oops! You\'re offline!',
+        type: 'danger'
+    });
+    }
+
+    // Submit form data via Ajax
+    $("#fupForm").on('submit', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: 'send.php',
+            data: new FormData(this),
+            dataType: 'json',
+            contentType: false,
+            cache: false,
+            processData:false,
+            beforeSend: function(){
+                if (navigator.onLine && localStorage.getItem("dataObject") === null) {
+                    this.data = this.data;
+                } else if (!navigator.onLine && localStorage.getItem("dataObject") === null) {
+                    localStorage.setItem("dataObject", JSON.stringify(this.data));
+                    new Toast({
+                    message: 'You\'re currently offline! Your message will be sent when you\'re online.',
+                    type: 'warning'
+                });
+                } else if (navigator.onLine && localStorage.getItem("dataObject") !== null) {
+                    this.data = localStorage.getItem("dataObject");
+                    new Toast({
+                    message: 'You\'re back online! Your message is sending.',
+                    type: 'success'
+                });
+                }
+                $('.submitBtn').attr("disabled", "disabled");
+                $('#fupForm').css("opacity", ".5");
+            },
+            success: function(response){ //console.log(response);
+                $('.statusMsg').html('');
+                if(response.status == 1){
+                    new Toast({
+                    message: 'Message sent successfully!',
+                    type: 'success'
+                    });
+                    $('#fupForm')[0].reset();
+                    $('.statusMsg').html('<p class="alert alert-success">'+response.message+'</p>');
+                }else{
+                    $('.statusMsg').html('<p class="alert alert-danger">'+response.message+'</p>');
+                }
+                $('#fupForm').css("opacity","");
+                $(".submitBtn").removeAttr("disabled");
+            }
+        });
+    });
+});
+
+// File type validation
+$("#file").change(function() {
+    var file = this.files[0];
+    var fileType = file.type;
+    var match = ['application/pdf', 'application/msword', 'application/vnd.ms-office', 'image/jpeg', 'image/png', 'image/jpg'];
+    if(!((fileType == match[0]) || (fileType == match[1]) || (fileType == match[2]) || (fileType == match[3]) || (fileType == match[4]) || (fileType == match[5]))){
+        alert('Sorry, only PDF, DOC, JPG, JPEG, & PNG files are allowed for upload.');
+        $("#file").val('');
+        return false;
+    }
+});
+</script>
