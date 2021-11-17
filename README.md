@@ -1,5 +1,5 @@
 # file-upload
-Form Data And File Upload With JQuery (Ajax), PHP and MySQL.
+Form Data And File Upload With JQuery (Ajax), PHP, MySQL And Toast JS For Online/Offline Status Plus Success/Failure Notifications.
 
 Create an "uploads" folder in your project's directory to store the uploaded files.
 
