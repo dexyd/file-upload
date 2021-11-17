@@ -53,7 +53,7 @@ $response = array(
             $dbHost     = "localhost"; 
             $dbUsername = "root"; 
             $dbPassword = ""; 
-            $dbName     = "dummy_db";
+            $dbName     = "database_name";
             
             // Create database connection 
             $conn = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName); 
@@ -64,7 +64,7 @@ $response = array(
             } 
                  
                 // Insert form data into database 
-                $insert = $conn->query("INSERT INTO form_data (names, emails, phones, genders, education, files, messages) VALUES ('$name','$email','$phone','$gender','$education','$uploadedFile','$message')");
+                $insert = $conn->query("INSERT INTO table_name (names, emails, phones, genders, education, files, messages) VALUES ('$name','$email','$phone','$gender','$education','$uploadedFile','$message')");
                  
                 if($insert){ 
                     $response['status'] = 1; 
