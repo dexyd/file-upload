@@ -133,6 +133,10 @@
                     $('#fupForm')[0].reset();
                     $('.statusMsg').html('<p class="alert alert-success">'+response.message+'</p>');
                 }else{
+                    new Toast({
+                    message: 'An error occurred!',
+                    type: 'danger'
+                    });
                     $('.statusMsg').html('<p class="alert alert-danger">'+response.message+'</p>');
                 }
                 $('#fupForm').css("opacity","");
