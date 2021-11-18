@@ -106,14 +106,17 @@
             processData:false,
             beforeSend: function(){
                 if (navigator.onLine && localStorage.getItem("dataObject") === null) {
+                    //If user is online and localStorage is empty, data is unchanged
                     this.data = this.data;
                 } else if (!navigator.onLine && localStorage.getItem("dataObject") === null) {
+                    //If user is offline and localStorage is empty, store data in localStorage
                     localStorage.setItem("dataObject", JSON.stringify(this.data));
                     new Toast({
                     message: 'You\'re currently offline! Your message will be sent when you\'re online.',
                     type: 'warning'
                 });
                 } else if (navigator.onLine && localStorage.getItem("dataObject") !== null) {
+                    //If user is online and localStorage is not empty, data to be sent is that from localStorage
                     this.data = localStorage.getItem("dataObject");
                     new Toast({
                     message: 'You\'re back online! Your message is sending.',
@@ -132,6 +135,8 @@
                     });
                     $('#fupForm')[0].reset();
                     $('.statusMsg').html('<p class="alert alert-success">'+response.message+'</p>');
+                    //Clear localStorage
+                    localStorage.clear();
                 }else{
                     new Toast({
                     message: 'An error occurred!',
